@@ -13,12 +13,16 @@ class App extends Component {
     showPersons: false
   };
 
-  nameChangeHandler = (event) => {
-    this.setState({ persons: [
-      { name: 'Cris', age: 23 },
-      { name: event.target.value , age: 12 },
-      { name: 'Ibiki', age: 28 }
-    ] });
+  nameChangeHandler = (event, id) => {
+    const personIndex = this.state.persons.findIndex(p => p.id === id);
+    const person = { ...this.state.persons[personIndex] };
+    // const person = Object.assign({}, this.state.persons[personIndex]);
+
+    person.name = event.target.value;
+    const persons = [ ...this.state.persons ];
+    persons[personIndex] = person;
+
+    this.setState({ persons });
   }
 
   deletePersonHandler = (personIndex) => {
@@ -37,7 +41,8 @@ class App extends Component {
 
   render() {
     const style = {
-      backgroundColor: 'white',
+      backgroundColor: 'green',
+      color: 'white',
       font: 'inherit',
       border: '1px solid blue',
       padding: '8px',
@@ -50,15 +55,31 @@ class App extends Component {
       persons = (
         <div>
           { this.state.persons.map((person, index) => {
-            return <Person name={ person.name } age={ person.age } click={ () => this.deletePersonHandler(index) } key={ person.id } />
+            return <Person 
+                      name={ person.name } 
+                      age={ person.age } 
+                      click={ () => this.deletePersonHandler(index) } 
+                      key={ person.id } 
+                      changed={ event => this.nameChangeHandler(event, person.id) } />
           }) }
         </div>
       );
+
+      style.backgroundColor = 'red';
     }
-    
+
+    let classes = [];
+    if (this.state.persons.length <= 2) {
+      classes.push('red');
+    }
+    if (this.state.persons.length <= 1) {
+      classes.push('bold');
+    }
+
     return (
       <div className="App">
         <h1>Hi i'm a React App</h1>
+        <p className={ classes.join(' ') }>React rocks !</p>
         <button
           style={ style }
           onClick={ this.togglePersonsHandler }>
